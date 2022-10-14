@@ -1,4 +1,5 @@
 import 'package:donate/controller/itens_provider.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -11,6 +12,14 @@ class Principal extends StatefulWidget {
 }
 
 class _PrincipalState extends State<Principal> {
+
+  late DatabaseReference itemsRef;
+
+  @override
+  void initState() {
+    itemsRef = FirebaseDatabase.instance.ref("principal");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -30,10 +39,18 @@ class _PrincipalState extends State<Principal> {
           ),
         ),
       ),
-      body: ListView.builder(
-        padding: const EdgeInsets.only(top: 16),
-        itemCount: items.count,
-        itemBuilder: (ctx, i) => ItemTile(items.byIndex(i)),
+      body: StreamBuilder(
+        stream: itemsRef != null ? itemsRef!.onValue : null,
+        builder: (context, snapshot){
+
+
+          return ListView.builder(
+            padding: const EdgeInsets.only(top: 16),
+            itemCount: items.count,
+            itemBuilder: (ctx, i) => ItemTile(items.byIndex(i)),
+          );
+        },
+
       ),
       floatingActionButton: Container(
         margin: const EdgeInsets.fromLTRB(80, 16, 50, 2),

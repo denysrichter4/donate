@@ -6,11 +6,15 @@ import 'controller/itens_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-Future<void> main() async {
+void main(){
+  runApp(const MyApp());
+  runFirebase();
+}
+
+void runFirebase() async{
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
