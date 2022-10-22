@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:donate/model/item.dart';
+import 'package:firebase_database/firebase_database.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:another_dashed_container/another_dashed_container.dart';
@@ -11,15 +14,36 @@ class AddAnuncio extends StatefulWidget {
 }
 
 class _AddAnuncioState extends State<AddAnuncio> {
-  var galleryFile;
+  XFile galleryFile = XFile("");
   final ImagePicker _picker = ImagePicker();
+
+  final TextEditingController tituloCrtl = TextEditingController();
+  final TextEditingController descriptionCrtl = TextEditingController();
+  final TextEditingController localCrtl = TextEditingController();
+  var serverUrl = "https://firebasestorage.googleapis.com/v0/b/donate-doacoes.appspot.com/o/images%2F";
+  var tokenImage = "?alt=media&token=bd9138a3-94ea-46a5-b983-c44c6cb556f9";
+  var nameImage = "http-${DateTime.now().millisecondsSinceEpoch}";
+  var isImage = false;
+
+  late DatabaseReference itemsRef;
+
+  late Reference storageRef;
+
+  @override
+  void initState() {
+    storageRef = FirebaseStorage.instance.ref();
+    itemsRef = FirebaseDatabase.instance.ref("principal");
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     imageSelectorGallery() async {
-      final XFile? image = await _picker.pickImage(source: ImageSource.gallery);
-      setState(() {
-        galleryFile = image as File;
+      galleryFile = (await _picker.pickImage(source: ImageSource.gallery))!;
+      var image = storageRef.child("images/$nameImage");
+      image.putFile(File(galleryFile.path));
+      setState((){
+        isImage = true;
       });
     }
     return Scaffold(
@@ -46,7 +70,7 @@ class _AddAnuncioState extends State<AddAnuncio> {
             height: 300,
             padding: const EdgeInsets.all(16),
             color: Colors.black12,
-              child: galleryFile == null
+              child: !isImage && galleryFile.path == ""
                     ? DashedContainer(
                   dashColor: Colors.orange,
                   borderRadius: 8,
@@ -69,7 +93,7 @@ class _AddAnuncioState extends State<AddAnuncio> {
                     ),
                   ),
                 )
-                    : Center(child: Image.file(galleryFile)),
+                    : Center(child: Image.file(File(galleryFile.path))),
           ),
           Container(
             child: Column(
@@ -86,22 +110,23 @@ class _AddAnuncioState extends State<AddAnuncio> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                   decoration: BoxDecoration(
                     border: Border.all(
                       color: Colors.black12
                     ),
                     borderRadius: const BorderRadius.all(Radius.circular(8))
                   ),
-                  child:  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16),
+                  child:  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
                     child: TextField(
+                      controller: tituloCrtl,
                       minLines: 1,
                       maxLines: 2,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 20,
                         ),
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: InputBorder.none
                         ),
                   ),),
@@ -125,22 +150,23 @@ class _AddAnuncioState extends State<AddAnuncio> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                   decoration: BoxDecoration(
                       border: Border.all(
                           color: Colors.black12
                       ),
                       borderRadius: const BorderRadius.all(Radius.circular(8))
                   ),
-                  child:  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16),
+                  child:  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
                     child: TextField(
+                      controller: descriptionCrtl,
                       minLines: 3,
                       maxLines: 10,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
                       ),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           border: InputBorder.none
                       ),
                     ),),
@@ -164,23 +190,24 @@ class _AddAnuncioState extends State<AddAnuncio> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                   decoration: BoxDecoration(
                       border: Border.all(
                           color: Colors.black12
                       ),
                       borderRadius: const BorderRadius.all(Radius.circular(8))
                   ),
-                  child:  const Padding(
-                    padding: EdgeInsets.only(left: 16, right: 16),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
                     child: TextField(
+                      controller: localCrtl,
                       minLines: 2,
                       maxLines: 3,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 20,
 
                       ),
-                      decoration: InputDecoration(
+                      decoration: const InputDecoration(
                           border: InputBorder.none
                       ),
                     ),),
@@ -191,7 +218,29 @@ class _AddAnuncioState extends State<AddAnuncio> {
           ),
           GestureDetector(
             onTap: (){
-
+              Map<String, dynamic> map = {};
+              var keyName = "${DateTime.now().millisecondsSinceEpoch}";
+              var day = "${DateTime.now().day}";
+              var month = "${DateTime.now().month}";
+              var year = "${DateTime.now().year}";
+              var hour = "${DateTime.now().hour}";
+              var minute = "${DateTime.now().minute}";
+              var t = "/";
+              var i = ":";
+              var e = "-";
+              setState(() {
+                map = {
+                  keyName : ItemFirebase(
+                    imagem: serverUrl+nameImage+tokenImage,
+                    titulo: tituloCrtl.text,
+                    descricao: descriptionCrtl.text,
+                    localRetirada: localCrtl.text,
+                    data: day+t+month+t+year+e+hour+i+minute
+                  ).toJson()
+                };
+              });
+              itemsRef.update(map);
+              Navigator.pop(context);
             },
             child: Container(
               margin: const EdgeInsets.fromLTRB(50, 16, 50, 2),

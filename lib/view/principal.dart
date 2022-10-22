@@ -58,7 +58,7 @@ class _PrincipalState extends State<Principal> {
               items.add(itemFirebase);
             }
             return ListView.builder(
-              padding: const EdgeInsets.only(top: 16),
+              padding: const EdgeInsets.only(top: 16, left: 2, right: 2),
               itemCount: items.length,
               itemBuilder: (ctx, i) => ItemTile(items[i]),
             );
@@ -80,7 +80,7 @@ class _PrincipalState extends State<Principal> {
           alignment: Alignment.bottomCenter,
           child: Container(
               height: 50,
-              width: 150,
+              width: 170,
               decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: Colors.amber.shade400

@@ -19,21 +19,24 @@ class ItemFirebase{
   final String titulo;
   final String descricao;
   final String localRetirada;
+  final String data;
 
   const ItemFirebase({
     required this.imagem,
     required this.titulo,
     required this.descricao,
-    required this.localRetirada
+    required this.localRetirada,
+    required this.data
   });
 
   ItemFirebase.fromJson(Map<String, dynamic> json)
       : imagem = json['imagem'],
         titulo = json['titulo'],
         descricao = json['descricao'],
-        localRetirada = json['localRetirada'];
+        localRetirada = json['localRetirada'],
+        data = json['data'];
   Map toJson() {
-    return {'imagem': imagem, 'titulo': titulo, 'descricao': descricao, 'localRetirada': localRetirada};
+    return {'imagem': imagem, 'titulo': titulo, 'descricao': descricao, 'localRetirada': localRetirada, 'data': data};
   }
 }
 class Items{

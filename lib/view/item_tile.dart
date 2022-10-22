@@ -14,6 +14,7 @@ class ItemTile extends StatelessWidget{
       title: item.titulo,
       description: item.descricao,
       localRetirada: item.localRetirada,
+      data: item.data
     );
   }
 }
@@ -25,18 +26,33 @@ class TileItem extends StatelessWidget {
     required this.title,
     required this.description,
     required this.localRetirada,
+    required this.data,
   }) : super(key: key);
 
   final String imagem;
   final String title;
   final String description;
   final String localRetirada;
+  final String data;
 
   @override
   Widget build(BuildContext context) {
-    final imagem = this.imagem.isEmpty
-        ? const Icon(Icons.add_a_photo_outlined)
-        : Image(
+    final imagem = this.imagem.isEmpty || this.imagem == null || !this.imagem.contains("http") ? Container(
+       height: 120,
+      width: 120,
+      decoration: BoxDecoration(
+        border: Border.all(),
+        borderRadius: const BorderRadius.all(Radius.circular(8))
+      ),
+      child: const Center(
+        child: Text(
+            "Anúncio sem imagem",
+            style: TextStyle(
+                fontSize: 10
+            )
+        ),
+      )
+    ) : Image(
       image:NetworkImage(this.imagem),
       fit: BoxFit.cover,
       width: 120,
@@ -52,7 +68,9 @@ class TileItem extends StatelessWidget {
                         imagem: this.imagem,
                         titulo: this.title,
                         descricao: this.description,
-                        localRetirada: this.localRetirada),
+                        localRetirada: this.localRetirada,
+                        data: this.data
+                    ),
                   ),
             )
         );
@@ -88,7 +106,7 @@ class TileItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      localRetirada,
+                      data,
                       style: const TextStyle(
                         color: Colors.black45,
                         overflow: TextOverflow.ellipsis,

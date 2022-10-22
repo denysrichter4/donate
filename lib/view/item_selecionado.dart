@@ -38,7 +38,13 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
           Container(
             height: 300,
             color: Colors.black12,
-            child: Image.network(
+            child: !widget
+                .itemFirebase
+                .imagem.contains("http")?
+                const Center(
+                  child: Text("Anúncio sem Imagens!"),
+                ):
+            Image.network(
               widget.itemFirebase.imagem,
               fit: BoxFit.contain,
             ),
