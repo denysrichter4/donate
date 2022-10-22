@@ -1,9 +1,10 @@
-import 'package:donate/controller/itens_provider.dart';
+import 'dart:convert';
+import 'package:donate/model/item.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
+import '../controller/routes.dart';
 import 'item_tile.dart';
+
 class Principal extends StatefulWidget {
   const Principal({Key? key}) : super(key: key);
 
@@ -23,7 +24,6 @@ class _PrincipalState extends State<Principal> {
 
   @override
   Widget build(BuildContext context) {
-    final ItemsProvider items = Provider.of(context);
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
@@ -40,38 +40,61 @@ class _PrincipalState extends State<Principal> {
         ),
       ),
       body: StreamBuilder(
-        stream: itemsRef != null ? itemsRef!.onValue : null,
+        stream: itemsRef.onValue,
         builder: (context, snapshot){
+          if(snapshot.hasData && !snapshot.hasError) {
+            var event = snapshot.data as DatabaseEvent;
+            var snapshot2 = event.snapshot.value;
 
+            if (snapshot2 == null) {
+              return const Center(child: Text("Sem items na lista"),);
+            }
+            var encoded = jsonEncode(snapshot2);
+            Map<String, dynamic> map = Map<String, dynamic>.from(jsonDecode(encoded.toString()));
 
-          return ListView.builder(
-            padding: const EdgeInsets.only(top: 16),
-            itemCount: items.count,
-            itemBuilder: (ctx, i) => ItemTile(items.byIndex(i)),
+            var items = <ItemFirebase>[];
+            for (var itemMap in map.values) {
+              ItemFirebase itemFirebase = ItemFirebase.fromJson(itemMap);
+              items.add(itemFirebase);
+            }
+            return ListView.builder(
+              padding: const EdgeInsets.only(top: 16),
+              itemCount: items.length,
+              itemBuilder: (ctx, i) => ItemTile(items[i]),
+            );
+
+          }else{
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
+      ),
+      floatingActionButton: GestureDetector(
+        onTap: (){
+          Navigator.of(context).pushNamed(
+              Routes.ADD_ANUNCIO
           );
         },
-
-      ),
-      floatingActionButton: Container(
-        margin: const EdgeInsets.fromLTRB(80, 16, 50, 2),
-        height: 50,
-        alignment: Alignment.bottomCenter,
         child: Container(
-            height: 50,
-            width: 150,
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                color: Colors.amber.shade400
-            ),
-            alignment: Alignment.center,
-            child: const Text(
-                "Anunciar doação",
-              style: TextStyle(
-                color: Colors.green,
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
+          margin: const EdgeInsets.fromLTRB(75, 16, 50, 2),
+          height: 50,
+          alignment: Alignment.bottomCenter,
+          child: Container(
+              height: 50,
+              width: 150,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.amber.shade400
               ),
-            )
+              alignment: Alignment.center,
+              child: const Text(
+                "Anunciar doação",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              )
+          ),
         ),
       )
     );

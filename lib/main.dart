@@ -1,20 +1,13 @@
+import 'package:donate/view/anuncio.dart';
 import 'package:donate/view/principal.dart';
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-import 'controller/itens_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'firebase_options.dart';
+import 'controller/routes.dart';
 
-void main(){
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(const MyApp());
-  runFirebase();
-}
-
-void runFirebase() async{
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,21 +15,16 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers:[
-        ChangeNotifierProvider(
-          create: (ctx) => ItemsProvider(),
-        ),
-      ],
-      child: MaterialApp(
-        title: 'Flutter Demo',
+    return MaterialApp(
+        title: 'Donate',
         theme: ThemeData(
           primarySwatch: Colors.amber,
         ),
+        initialRoute: "/",
         routes: {
-          "/": (_)=> const Principal(),
+          Routes.HOME: (_)=> const Principal(),
+          Routes.ADD_ANUNCIO: (_)=> const AddAnuncio(),
         },
-      ),
     );
   }
 }
