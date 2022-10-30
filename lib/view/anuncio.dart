@@ -28,6 +28,24 @@ class _AddAnuncioState extends State<AddAnuncio> {
   var tokenImage = "?alt=media&token=bd9138a3-94ea-46a5-b983-c44c6cb556f9";
   var nameImage = "http-${DateTime.now().millisecondsSinceEpoch}";
   var isImage = false;
+  String dropdownDias = "";
+  String dropdownHorario = "";
+  List<String> dropdownDiasList = <String>['1 dia', '2 dias', '3 dias', '4 dias'];
+  List<String> dropdownHorarioList = <String>['8h as 17h', '9h as 17h', '10h as 17h', '8h as 22h'];
+  DropdownMenuItem<String> itemDropdown(String value) => DropdownMenuItem<String>(
+      value: value,
+      child: Text(
+        value,
+        style: TextStyle(fontSize: 20),
+      ),
+    );
+
+  List<DropdownMenuItem<String>> itensDropdownDias(){
+    return dropdownDiasList.map<DropdownMenuItem<String>>(itemDropdown).toList();
+  }
+  List<DropdownMenuItem<String>> itensDropdownHorario(){
+    return dropdownHorarioList.map<DropdownMenuItem<String>>(itemDropdown).toList();
+  }
 
   late DatabaseReference itemsRef;
 
@@ -341,6 +359,7 @@ class _AddAnuncioState extends State<AddAnuncio> {
             ),
           ),
           Container(
+            margin: const EdgeInsets.only(bottom: 30),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -354,32 +373,36 @@ class _AddAnuncioState extends State<AddAnuncio> {
                     ),
                   ),
                 ),
-                Container(
-                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
-                  decoration: BoxDecoration(
-                      border: Border.all(
-                          color: Colors.black12
+                Row(
+                  children: [
+                    Container(
+                      margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                      width: 150,
+                      child: DropdownButtonFormField(
+                        items: itensDropdownDias(),
+                        value: itensDropdownDias().first.value,
+                        onChanged: (value){
+                          setState(() {
+                            dropdownDias = value.toString();
+                          });
+                        },
                       ),
-                      borderRadius: const BorderRadius.all(Radius.circular(8))
-                  ),
-                  // child: Padding(
-                  //   padding: const EdgeInsets.only(left: 16, right: 16),
-                  //   child: TextField(
-                  //     controller: prazoCrtl,
-                  //     minLines: 2,
-                  //     maxLines: 3,
-                  //     style: const TextStyle(
-                  //       fontSize: 20,
-                  //
-                  //     ),
-                  //     decoration: const InputDecoration(
-                  //         border: InputBorder.none
-                  //     ),
-                  //   ),
-                  // ),
-                  S
-                ),
-
+                    ),
+                    Container(
+                      margin: const EdgeInsets.only(left: 16, bottom: 8),
+                      width: 150,
+                      child: DropdownButtonFormField(
+                        items: itensDropdownHorario(),
+                        value: itensDropdownHorario().first.value,
+                        onChanged: (value){
+                          setState(() {
+                            dropdownHorario = value.toString();
+                          });
+                        },
+                      ),
+                    ),
+                  ],
+                )
               ],
             ),
           ),
@@ -405,8 +428,9 @@ class _AddAnuncioState extends State<AddAnuncio> {
                     especificidades: especifidadesCrtl.text,
                     problemas:problemasCrtl.text,
                     localRetirada: localCrtl.text,
-                    prazoRetirada: prazoCrtl.text,
-                    data: day+t+month+t+year+e+hour+i+minute
+                    prazoRetirada: "$dropdownDias - $dropdownHorario",
+                    data: day+t+month+t+year+e+hour+i+minute,
+                    keyName: keyName
                   ).toJson()
                 };
               });

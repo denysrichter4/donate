@@ -1,11 +1,16 @@
+import 'dart:ffi';
+
 import 'package:donate/view/item_selecionado.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../controller/routes.dart';
 import '../model/item.dart';
 
 class ItemTile extends StatelessWidget{
   final ItemFirebase item;
-  const ItemTile(this.item);
+  final bool isPrincipal;
+  const ItemTile(this.item, this.isPrincipal);
+
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +23,9 @@ class ItemTile extends StatelessWidget{
       problemas: item.problemas,
       localRetirada: item.localRetirada,
       prazoRetirada: item.prazoRetirada,
-      data: item.data
+      data: item.data,
+      isPrincipal: isPrincipal,
+      keyName: item.keyName,
     );
   }
 }
@@ -35,6 +42,8 @@ class TileItem extends StatelessWidget {
     required this.localRetirada,
     required this.prazoRetirada,
     required this.data,
+    required this.isPrincipal,
+    required this.keyName
   }) : super(key: key);
 
   final String imagem;
@@ -46,9 +55,13 @@ class TileItem extends StatelessWidget {
   final String localRetirada;
   final String prazoRetirada;
   final String data;
+  final String keyName;
+  final bool isPrincipal;
 
   @override
   Widget build(BuildContext context) {
+    DatabaseReference itemsRef = FirebaseDatabase.instance.ref("principal");
+    DatabaseReference itemsRefExclude = FirebaseDatabase.instance.ref("em_analise");
     final imagem = this.imagem.isEmpty || this.imagem == null || !this.imagem.contains("http") ? Container(
        height: 120,
       width: 120,
@@ -72,24 +85,67 @@ class TileItem extends StatelessWidget {
     );
     return GestureDetector(
       onTap: (){
-        Navigator.push(
-            context,
-            MaterialPageRoute<void>(
-                  builder: (BuildContext context) => ItemSelecionado(
-                    itemFirebase: ItemFirebase(
-                        imagem: this.imagem,
-                        titulo: this.title,
-                        descricao: this.description,
-                        motivo: this.motivo,
-                        especificidades: this.especificidades,
-                        problemas: this.problemas,
-                        localRetirada: this.localRetirada,
-                        prazoRetirada: this.prazoRetirada,
-                        data: this.data
-                    ),
+        if(this.isPrincipal){
+          Navigator.push(
+              context,
+              MaterialPageRoute<void>(
+                builder: (BuildContext context) => ItemSelecionado(
+                  itemFirebase: ItemFirebase(
+                      imagem: this.imagem,
+                      titulo: this.title,
+                      descricao: this.description,
+                      motivo: this.motivo,
+                      especificidades: this.especificidades,
+                      problemas: this.problemas,
+                      localRetirada: this.localRetirada,
+                      prazoRetirada: this.prazoRetirada,
+                      keyName: this.keyName,
+                      data: this.data
                   ),
-            )
-        );
+                ),
+              )
+          );
+        } else{
+          showDialog<String>(
+              context: context,
+              builder: (BuildContext context) =>AlertDialog(
+            title: const Text('Validar item'),
+            content: const Text('Deseja EXCLUIR ou APROVAR item?'),
+            actions: <Widget>[
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, 'Cancel');
+                  itemsRefExclude.child(keyName).remove();
+                },
+                child: const Text('Excluir'),
+              ),
+              TextButton(
+                onPressed: () {
+                  Navigator.pop(context, 'Cancel');
+                  Map<String, dynamic> map = {};
+                  map = {
+                    keyName : ItemFirebase(
+                        imagem: this.imagem,
+                        titulo: title,
+                        descricao: description,
+                        motivo: motivo,
+                        especificidades: especificidades,
+                        problemas: problemas,
+                        localRetirada: localRetirada,
+                        prazoRetirada: prazoRetirada,
+                        keyName: keyName,
+                        data: data
+                    ).toJson()
+                  };
+                  itemsRef.update(map);
+                  itemsRefExclude.child(keyName).remove();
+                } ,
+                child: const Text('Aprovar'),
+              ),
+            ],
+          )
+          );
+        }
       },
       child: Card(
           child: Row(

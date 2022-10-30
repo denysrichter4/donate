@@ -21,7 +21,7 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.amber,
         ),
-        initialRoute: Routes.HOME,
+        initialRoute: Routes.HOME_EM_ANALISE,
         routes: {
           Routes.HOME: (_)=> const Principal(),
           Routes.HOME_EM_ANALISE: (_)=> const EmAnalise(),

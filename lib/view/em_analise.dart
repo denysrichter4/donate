@@ -58,9 +58,9 @@ class _EmAnaliseState extends State<EmAnalise> {
                 items.add(itemFirebase);
               }
               return ListView.builder(
-                padding: const EdgeInsets.only(top: 16, left: 2, right: 2),
+                padding: const EdgeInsets.only(top: 16, left: 2, right: 2, bottom: 120),
                 itemCount: items.length,
-                itemBuilder: (ctx, i) => ItemTile(items[i]),
+                itemBuilder: (ctx, i) => ItemTile(items[i], false),
               );
 
             }else{

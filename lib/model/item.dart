@@ -8,8 +8,9 @@ class ItemFirebase{
   final String localRetirada;
   final String prazoRetirada;
   final String data;
+  final String keyName;
 
-  const ItemFirebase({
+  ItemFirebase({
     required this.imagem,
     required this.titulo,
     required this.descricao,
@@ -18,7 +19,8 @@ class ItemFirebase{
     required this.problemas,
     required this.localRetirada,
     required this.prazoRetirada,
-    required this.data
+    required this.data,
+    required this.keyName
   });
 
   ItemFirebase.fromJson(Map<String, dynamic> json)
@@ -30,7 +32,8 @@ class ItemFirebase{
         problemas = json['problemas'],
         localRetirada = json['localRetirada'],
         prazoRetirada = json['prazoRetirada'],
-        data = json['data'];
+        data = json['data'],
+        keyName = json['keyName'];
 
   Map toJson() {
     return {
@@ -42,7 +45,8 @@ class ItemFirebase{
       'problemas': problemas,
       'localRetirada': localRetirada,
       'prazoRetirada': prazoRetirada,
-      'data': data
+      'data': data,
+      'keyName': keyName
     };
   }
 }
