@@ -19,7 +19,11 @@ class _AddAnuncioState extends State<AddAnuncio> {
 
   final TextEditingController tituloCrtl = TextEditingController();
   final TextEditingController descriptionCrtl = TextEditingController();
+  final TextEditingController motivoCrtl = TextEditingController();
+  final TextEditingController especifidadesCrtl = TextEditingController();
+  final TextEditingController problemasCrtl = TextEditingController();
   final TextEditingController localCrtl = TextEditingController();
+  final TextEditingController prazoCrtl = TextEditingController();
   var serverUrl = "https://firebasestorage.googleapis.com/v0/b/donate-doacoes.appspot.com/o/images%2F";
   var tokenImage = "?alt=media&token=bd9138a3-94ea-46a5-b983-c44c6cb556f9";
   var nameImage = "http-${DateTime.now().millisecondsSinceEpoch}";
@@ -32,7 +36,7 @@ class _AddAnuncioState extends State<AddAnuncio> {
   @override
   void initState() {
     storageRef = FirebaseStorage.instance.ref();
-    itemsRef = FirebaseDatabase.instance.ref("principal");
+    itemsRef = FirebaseDatabase.instance.ref("em_analise");
     super.initState();
   }
 
@@ -182,6 +186,126 @@ class _AddAnuncioState extends State<AddAnuncio> {
                 const Padding(
                   padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
                   child:  Text(
+                    "Motivo :",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.black12
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(8))
+                  ),
+                  child:  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: TextField(
+                      controller: motivoCrtl,
+                      minLines: 3,
+                      maxLines: 10,
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                      decoration: const InputDecoration(
+                          border: InputBorder.none
+                      ),
+                    ),),
+                ),
+
+              ],
+            ),
+          ),
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                  child:  Text(
+                    "Especificidades : (ex: voltagem, etc...)",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.black12
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(8))
+                  ),
+                  child:  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: TextField(
+                      controller: especifidadesCrtl,
+                      minLines: 3,
+                      maxLines: 10,
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                      decoration: const InputDecoration(
+                          border: InputBorder.none
+                      ),
+                    ),),
+                ),
+
+              ],
+            ),
+          ),
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                  child:  Text(
+                    "Problemas ou Danos :",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.black12
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(8))
+                  ),
+                  child:  Padding(
+                    padding: const EdgeInsets.only(left: 16, right: 16),
+                    child: TextField(
+                      controller: problemasCrtl,
+                      minLines: 3,
+                      maxLines: 10,
+                      style: const TextStyle(
+                        fontSize: 20,
+                      ),
+                      decoration: const InputDecoration(
+                          border: InputBorder.none
+                      ),
+                    ),),
+                ),
+
+              ],
+            ),
+          ),
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                  child:  Text(
                     "Local da retirada :",
                     style: TextStyle(
                       fontSize: 16,
@@ -216,6 +340,49 @@ class _AddAnuncioState extends State<AddAnuncio> {
               ],
             ),
           ),
+          Container(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Padding(
+                  padding: EdgeInsets.only(left: 16, right: 16, top: 16, bottom: 8),
+                  child:  Text(
+                    "Prazo de retirada :",
+                    style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
+                  decoration: BoxDecoration(
+                      border: Border.all(
+                          color: Colors.black12
+                      ),
+                      borderRadius: const BorderRadius.all(Radius.circular(8))
+                  ),
+                  // child: Padding(
+                  //   padding: const EdgeInsets.only(left: 16, right: 16),
+                  //   child: TextField(
+                  //     controller: prazoCrtl,
+                  //     minLines: 2,
+                  //     maxLines: 3,
+                  //     style: const TextStyle(
+                  //       fontSize: 20,
+                  //
+                  //     ),
+                  //     decoration: const InputDecoration(
+                  //         border: InputBorder.none
+                  //     ),
+                  //   ),
+                  // ),
+                  S
+                ),
+
+              ],
+            ),
+          ),
           GestureDetector(
             onTap: (){
               Map<String, dynamic> map = {};
@@ -234,7 +401,11 @@ class _AddAnuncioState extends State<AddAnuncio> {
                     imagem: serverUrl+nameImage+tokenImage,
                     titulo: tituloCrtl.text,
                     descricao: descriptionCrtl.text,
+                    motivo: motivoCrtl.text,
+                    especificidades: especifidadesCrtl.text,
+                    problemas:problemasCrtl.text,
                     localRetirada: localCrtl.text,
+                    prazoRetirada: prazoCrtl.text,
                     data: day+t+month+t+year+e+hour+i+minute
                   ).toJson()
                 };

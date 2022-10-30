@@ -13,7 +13,11 @@ class ItemTile extends StatelessWidget{
       imagem: item.imagem,
       title: item.titulo,
       description: item.descricao,
+      motivo: item.motivo,
+      especificidades: item.especificidades,
+      problemas: item.problemas,
       localRetirada: item.localRetirada,
+      prazoRetirada: item.prazoRetirada,
       data: item.data
     );
   }
@@ -25,14 +29,22 @@ class TileItem extends StatelessWidget {
     required this.imagem,
     required this.title,
     required this.description,
+    required this.motivo,
+    required this.especificidades,
+    required this.problemas,
     required this.localRetirada,
+    required this.prazoRetirada,
     required this.data,
   }) : super(key: key);
 
   final String imagem;
   final String title;
   final String description;
+  final String motivo;
+  final String especificidades;
+  final String problemas;
   final String localRetirada;
+  final String prazoRetirada;
   final String data;
 
   @override
@@ -68,7 +80,11 @@ class TileItem extends StatelessWidget {
                         imagem: this.imagem,
                         titulo: this.title,
                         descricao: this.description,
+                        motivo: this.motivo,
+                        especificidades: this.especificidades,
+                        problemas: this.problemas,
                         localRetirada: this.localRetirada,
+                        prazoRetirada: this.prazoRetirada,
                         data: this.data
                     ),
                   ),
