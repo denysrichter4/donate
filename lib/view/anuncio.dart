@@ -28,8 +28,8 @@ class _AddAnuncioState extends State<AddAnuncio> {
   var tokenImage = "?alt=media&token=bd9138a3-94ea-46a5-b983-c44c6cb556f9";
   var nameImage = "http-${DateTime.now().millisecondsSinceEpoch}";
   var isImage = false;
-  String dropdownDias = "";
-  String dropdownHorario = "";
+  String dropdownDias = "1 dia";
+  String dropdownHorario = "8h as 17h";
   List<String> dropdownDiasList = <String>['1 dia', '2 dias', '3 dias', '4 dias'];
   List<String> dropdownHorarioList = <String>['8h as 17h', '9h as 17h', '10h as 17h', '8h as 22h'];
   DropdownMenuItem<String> itemDropdown(String value) => DropdownMenuItem<String>(
@@ -381,9 +381,9 @@ class _AddAnuncioState extends State<AddAnuncio> {
                       child: DropdownButtonFormField(
                         items: itensDropdownDias(),
                         value: itensDropdownDias().first.value,
-                        onChanged: (value){
+                        onChanged: (String? value){
                           setState(() {
-                            dropdownDias = value.toString();
+                            dropdownDias = value!;
                           });
                         },
                       ),
@@ -394,9 +394,9 @@ class _AddAnuncioState extends State<AddAnuncio> {
                       child: DropdownButtonFormField(
                         items: itensDropdownHorario(),
                         value: itensDropdownHorario().first.value,
-                        onChanged: (value){
+                        onChanged: (String? value){
                           setState(() {
-                            dropdownHorario = value.toString();
+                            dropdownHorario = value!;
                           });
                         },
                       ),

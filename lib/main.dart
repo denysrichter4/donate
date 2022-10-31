@@ -1,6 +1,8 @@
+import 'package:donate/view/admin_view.dart';
 import 'package:donate/view/anuncio.dart';
 import 'package:donate/view/em_analise.dart';
 import 'package:donate/view/principal.dart';
+import 'package:donate/view/user_view.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'controller/routes.dart';
@@ -21,10 +23,12 @@ class MyApp extends StatelessWidget {
         theme: ThemeData(
           primarySwatch: Colors.amber,
         ),
-        initialRoute: Routes.HOME_EM_ANALISE,
+        initialRoute: Routes.SPLASH,
         routes: {
-          Routes.HOME: (_)=> const Principal(),
-          Routes.HOME_EM_ANALISE: (_)=> const EmAnalise(),
+          Routes.SPLASH: (_)=> const UserView(),
+          Routes.LOGIN: (_)=> const UserView(),
+          Routes.HOME_USER: (_)=> const UserView(),
+          Routes.HOME_ADMIN: (_)=> const AdminView(),
           Routes.ADD_ANUNCIO: (_)=> const AddAnuncio(),
         },
     );

@@ -19,6 +19,7 @@ dependencies:
   firebase_core: ^1.24.0
   another_dashed_container: ^1.0.0
   image_picker: ^0.8.6
+  flutter_native_splash: ^2.2.13
 
 dev_dependencies:
   flutter_test:
