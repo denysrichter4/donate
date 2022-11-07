@@ -2,10 +2,10 @@ import 'dart:ffi';
 
 class Usuario{
   final String uuid;
-  bool? admin = false;
+  bool? admin;
   final String nome;
   final String email;
-  final Future<String> senha;
+  final String senha;
 
   Usuario({
     required this.uuid,

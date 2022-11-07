@@ -23,12 +23,40 @@ class _CadastroViewState extends State<CadastroView> {
 
   late DatabaseReference itemsRef;
   late FirebaseAuth auth;
+  Map<String, dynamic> map = {};
 
   @override
   void initState() {
     auth = FirebaseAuth.instance;
     itemsRef = FirebaseDatabase.instance.ref("users");
+    googleLogin();
     super.initState();
+  }
+
+  void googleLogin(){
+    String name = user()!.displayName!;
+    String email = user()!.email!;
+    nomeCtrl.text = name;
+    emailCtrl.text = email;
+  }
+
+  User? user() => auth.currentUser;
+
+  Future<void> runSnapshot() async {
+    if(user() != null){
+      String id = user()!.uid;
+      String senha = await Crypto.encrypt(senhaCtrl.text);
+      map = {
+        id : Usuario(
+            uuid: id,
+            admin: false,
+            nome: nomeCtrl.text,
+            email: emailCtrl.text,
+            senha: senha
+        ).toJson()
+      };
+      itemsRef.update(map);
+    }
   }
 
   @override
@@ -68,7 +96,7 @@ class _CadastroViewState extends State<CadastroView> {
                   child:  Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
                     child: TextField(
-                      controller: emailCtrl,
+                      controller: nomeCtrl,
                       minLines: 1,
                       maxLines: 2,
                       style: const TextStyle(
@@ -195,20 +223,10 @@ class _CadastroViewState extends State<CadastroView> {
               ],
             ),
             GestureDetector(
-              onTap: (){
-                Map<String, dynamic> map = {};
-                String? uid = auth.currentUser?.uid;
+              onTap: () {
                 setState(() {
-                  map = {
-                    uid! : Usuario(
-                        uuid: uid,
-                        nome: nomeCtrl.text,
-                        email: emailCtrl.text,
-                        senha: Crypto.encrypt(senhaCtrl.text)
-                    ).toJson()
-                  };
+                  runSnapshot();
                 });
-                itemsRef.update(map);
                 Navigator.of(context).pushNamed(
                     Routes.LOGIN
                 );
