@@ -29,7 +29,9 @@ class _LoginViewState extends State<LoginView> {
     itemsRef = FirebaseDatabase.instance.ref("users/${auth.currentUser?.uid}/admin");
     itemsRef.onValue.listen((DatabaseEvent event) {
       var admin = event.snapshot.value;
-      isAdmin = admin as bool;
+      if(admin != null){
+        isAdmin = admin as bool;
+      }
     });
     super.initState();
   }
