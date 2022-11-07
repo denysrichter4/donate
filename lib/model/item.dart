@@ -1,26 +1,33 @@
 class ItemFirebase{
-  final String imagem;
+  String? imagem;
   final String titulo;
   final String descricao;
-  final String motivo;
-  final String especificidades;
-  final String problemas;
+  String? motivo;
+  String? especificidades;
+  String? problemas;
   final String localRetirada;
   final String prazoRetirada;
   final String data;
   final String keyName;
+  String? dataSolicitada;
+  String? horarioSolicitado;
+  String? user;
+  String? userInteressado;
+
 
   ItemFirebase({
-    required this.imagem,
+    this.imagem,
     required this.titulo,
     required this.descricao,
-    required this.motivo,
-    required this.especificidades,
-    required this.problemas,
+    this.motivo,
+    this.especificidades,
+    this.problemas,
     required this.localRetirada,
     required this.prazoRetirada,
     required this.data,
-    required this.keyName
+    required this.keyName,
+    this.user,
+    this.userInteressado
   });
 
   ItemFirebase.fromJson(Map<String, dynamic> json)
@@ -33,7 +40,11 @@ class ItemFirebase{
         localRetirada = json['localRetirada'],
         prazoRetirada = json['prazoRetirada'],
         data = json['data'],
-        keyName = json['keyName'];
+        keyName = json['keyName'],
+        dataSolicitada = json['dataSolicitada'],
+        horarioSolicitado = json['horarioSolicitado'],
+        user = json['user'],
+        userInteressado = json['userInteressado'];
 
   Map toJson() {
     return {
@@ -46,13 +57,11 @@ class ItemFirebase{
       'localRetirada': localRetirada,
       'prazoRetirada': prazoRetirada,
       'data': data,
-      'keyName': keyName
+      'keyName': keyName,
+      'dataSolicitada': dataSolicitada,
+      'horarioSolicitado': horarioSolicitado,
+      'user': user,
+      'userInteressado': userInteressado,
     };
   }
-}
-class Items{
-  List<ItemFirebase> items;
-  Items({
-    required this.items
-  });
 }

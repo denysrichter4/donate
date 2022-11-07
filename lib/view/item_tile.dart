@@ -9,18 +9,18 @@ import '../model/item.dart';
 class ItemTile extends StatelessWidget{
   final ItemFirebase item;
   final bool isPrincipal;
-  const ItemTile(this.item, this.isPrincipal);
+  const ItemTile(this.item, this.isPrincipal, {super.key});
 
 
   @override
   Widget build(BuildContext context) {
     return TileItem(
-      imagem: item.imagem,
+      imagem: item.imagem!,
       title: item.titulo,
       description: item.descricao,
-      motivo: item.motivo,
-      especificidades: item.especificidades,
-      problemas: item.problemas,
+      motivo: item.motivo!,
+      especificidades: item.especificidades!,
+      problemas: item.problemas!,
       localRetirada: item.localRetirada,
       prazoRetirada: item.prazoRetirada,
       data: item.data,

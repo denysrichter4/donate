@@ -40,12 +40,12 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
             color: Colors.black12,
             child: !widget
                 .itemFirebase
-                .imagem.contains("http")?
+                .imagem!.contains("http")?
                 const Center(
                   child: Text("Anúncio sem Imagens!"),
                 ):
             Image.network(
-              widget.itemFirebase.imagem,
+              widget.itemFirebase.imagem!,
               fit: BoxFit.contain,
             ),
           ),
@@ -64,6 +64,7 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                     ),
                   ),
                 ),
+                const Divider(),
                 Container(
                   margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                   child: Column(
@@ -75,7 +76,7 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                           "Descrição",
                           style: TextStyle(
                               fontSize: 18,
-                              fontWeight: FontWeight.bold
+                              color: Colors.black,
                           ),
                         ),
                       ),
@@ -83,13 +84,95 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                         widget.itemFirebase.descricao,
                         textAlign: TextAlign.justify,
                         style: const TextStyle(
-                            fontSize: 18,
+                            fontSize: 15,
                             color: Colors.black54
                         ),
                       ),
                     ],
                   )
                 ),
+                const Divider(),
+                Container(
+                    margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            "Motivo",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          widget.itemFirebase.descricao,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black54
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                const Divider(),
+                Container(
+                    margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            "Especificidades (Voltagem, detalhes, ect...)",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          widget.itemFirebase.descricao,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black54
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                const Divider(),
+                Container(
+                    margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            "Problemas/Danos",
+                            style: TextStyle(
+                              fontSize: 18,
+                              color: Colors.black,
+                            ),
+                          ),
+                        ),
+                        Text(
+                          widget.itemFirebase.descricao,
+                          textAlign: TextAlign.justify,
+                          style: const TextStyle(
+                              fontSize: 15,
+                              color: Colors.black54
+                          ),
+                        ),
+                      ],
+                    )
+                ),
+                const Divider(),
                 isSelected ? Container(
                   margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                   child: Column(
@@ -114,7 +197,33 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                       ),
                     ],
                   ),
-                ) : Text("..."),
+                ) : const Text("..."),
+                const Divider(),
+                isSelected ? Container(
+                  margin: const EdgeInsets.fromLTRB(0, 8, 0, 100),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          "Local",
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                      Text(
+                        widget.itemFirebase.localRetirada,
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black45
+                        ),
+                      ),
+                    ],
+                  ),
+                ) : const Text("..."),
               ],
             ),
           ),
