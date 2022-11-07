@@ -1,6 +1,9 @@
 import 'package:donate/view/cadastro_view.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
+import '../controller/login_google.dart';
 import '../controller/routes.dart';
 
 class LoginView extends StatefulWidget {
@@ -15,6 +18,21 @@ class _LoginViewState extends State<LoginView> {
   final TextEditingController emailCtrl = TextEditingController();
   final TextEditingController senhaCtrl = TextEditingController();
   bool isAdmin = false;
+
+  late DatabaseReference itemsRef;
+  late FirebaseAuth auth;
+
+  @override
+  void initState() {
+    signInWithGoogle();
+    auth = FirebaseAuth.instance;
+    itemsRef = FirebaseDatabase.instance.ref("users/${auth.currentUser?.uid}/admin");
+    itemsRef.onValue.listen((DatabaseEvent event) {
+      var admin = event.snapshot.value;
+      isAdmin = admin as bool;
+    });
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
