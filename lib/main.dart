@@ -1,13 +1,12 @@
 import 'package:donate/view/admin_view.dart';
 import 'package:donate/view/anuncio.dart';
-import 'package:donate/view/cadastro_view.dart';
-import 'package:donate/view/em_analise.dart';
 import 'package:donate/view/login_view.dart';
-import 'package:donate/view/principal.dart';
 import 'package:donate/view/user_view.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'controller/routes.dart';
+import 'package:donate/controller/login_controller.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();

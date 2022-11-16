@@ -1,4 +1,5 @@
 class ItemFirebase{
+  bool? isAprovado;
   String? imagem;
   final String titulo;
   final String descricao;
@@ -16,6 +17,7 @@ class ItemFirebase{
 
 
   ItemFirebase({
+    this.isAprovado,
     this.imagem,
     required this.titulo,
     required this.descricao,
@@ -31,7 +33,8 @@ class ItemFirebase{
   });
 
   ItemFirebase.fromJson(Map<String, dynamic> json)
-      : imagem = json['imagem'],
+      : isAprovado = json['isAprovado'],
+        imagem = json['imagem'],
         titulo = json['titulo'],
         descricao = json['descricao'],
         motivo = json['motivo'],
@@ -48,6 +51,7 @@ class ItemFirebase{
 
   Map toJson() {
     return {
+      'isAprovado': isAprovado,
       'imagem': imagem,
       'titulo': titulo,
       'descricao': descricao,

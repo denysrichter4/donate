@@ -1,4 +1,6 @@
 import 'package:donate/model/item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 
 class ItemSelecionado extends StatefulWidget {
@@ -12,6 +14,25 @@ class ItemSelecionado extends StatefulWidget {
 class _ItemSelecionadoState extends State<ItemSelecionado> {
 
   bool isSelected = false;
+
+  String dropdownDias = "1 dia";
+  String dropdownHorario = "8h as 17h";
+  List<String> dropdownDiasList = <String>['1 dia', '2 dias', '3 dias', '4 dias'];
+  List<String> dropdownHorarioList = <String>['8h as 17h', '9h as 17h', '10h as 17h', '8h as 22h'];
+  DropdownMenuItem<String> itemDropdown(String value) => DropdownMenuItem<String>(
+    value: value,
+    child: Text(
+      value,
+      style: TextStyle(fontSize: 20),
+    ),
+  );
+
+  List<DropdownMenuItem<String>> itensDropdownDias(){
+    return dropdownDiasList.map<DropdownMenuItem<String>>(itemDropdown).toList();
+  }
+  List<DropdownMenuItem<String>> itensDropdownHorario(){
+    return dropdownHorarioList.map<DropdownMenuItem<String>>(itemDropdown).toList();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -173,7 +194,7 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                     )
                 ),
                 const Divider(),
-                isSelected ? Container(
+                Container(
                   margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -197,17 +218,17 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                       ),
                     ],
                   ),
-                ) : const Text("..."),
+                ),
                 const Divider(),
-                isSelected ? Container(
-                  margin: const EdgeInsets.fromLTRB(0, 8, 0, 100),
+                Container(
+                  margin: const EdgeInsets.fromLTRB(0, 8, 0, 8),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       const Padding(
                         padding: EdgeInsets.only(bottom: 8),
                         child: Text(
-                          "Local",
+                          "Prazo de retirada Doador :",
                           style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold
@@ -215,7 +236,7 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                         ),
                       ),
                       Text(
-                        widget.itemFirebase.localRetirada,
+                        widget.itemFirebase.prazoRetirada,
                         style: const TextStyle(
                             fontSize: 12,
                             color: Colors.black45
@@ -223,7 +244,56 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                       ),
                     ],
                   ),
-                ) : const Text("..."),
+                ),
+                const Divider(),
+                Container(
+                  margin: const EdgeInsets.only(bottom: 100),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(left: 0, right: 16, top: 16, bottom: 8),
+                        child:  Text(
+                          "Prazo de retirada Donatário:",
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: const EdgeInsets.only(left: 0, right: 16, bottom: 8),
+                            width: 150,
+                            child: DropdownButtonFormField(
+                              items: itensDropdownDias(),
+                              value: itensDropdownDias().first.value,
+                              onChanged: (String? value){
+                                setState(() {
+                                  dropdownDias = value!;
+                                });
+                              },
+                            ),
+                          ),
+                          Container(
+                            margin: const EdgeInsets.only(left: 16, bottom: 8),
+                            width: 150,
+                            child: DropdownButtonFormField(
+                              items: itensDropdownHorario(),
+                              value: itensDropdownHorario().first.value,
+                              onChanged: (String? value){
+                                setState(() {
+                                  dropdownHorario = value!;
+                                });
+                              },
+                            ),
+                          ),
+                        ],
+                      )
+                    ],
+                  ),
+                ),
               ],
             ),
           ),
@@ -231,9 +301,16 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
       ),
       floatingActionButton: GestureDetector(
         onTap: (){
+          Map<String, dynamic> map = {};
           setState(() {
-            isSelected = true;
+            widget.itemFirebase.userInteressado = FirebaseAuth.instance.currentUser!.uid;
+            widget.itemFirebase.isAprovado = true;
+            widget.itemFirebase.dataSolicitada = dropdownDias;
+            widget.itemFirebase.horarioSolicitado = dropdownHorario;
+            map = {widget.itemFirebase.keyName : widget.itemFirebase.toJson()};
           });
+          FirebaseDatabase.instance.ref("principal").update(map);
+          Navigator.pop(context);
         },
         child: Container(
           margin: const EdgeInsets.fromLTRB(80, 16, 60, 16),

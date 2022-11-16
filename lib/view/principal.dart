@@ -1,12 +1,16 @@
 import 'dart:convert';
 import 'package:donate/model/item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../controller/routes.dart';
 import 'item_tile.dart';
 
 class Principal extends StatefulWidget {
-  const Principal({Key? key}) : super(key: key);
+  const Principal({Key? key, required this.isUser, required this.isUserInteressado}) : super(key: key);
+
+  final bool isUser;
+  final bool isUserInteressado;
 
   @override
   State<Principal> createState() => _PrincipalState();
@@ -16,11 +20,13 @@ class _PrincipalState extends State<Principal> {
 
   late DatabaseReference itemsRef;
   late DatabaseReference itemsRefAnalise;
+  User? user;
 
   @override
   void initState() {
     itemsRef = FirebaseDatabase.instance.ref("principal");
     itemsRefAnalise = FirebaseDatabase.instance.ref("em_analise");
+    user = FirebaseAuth.instance.currentUser;
     super.initState();
   }
 
@@ -42,7 +48,19 @@ class _PrincipalState extends State<Principal> {
           var items = <ItemFirebase>[];
           for (var itemMap in map.values) {
             ItemFirebase itemFirebase = ItemFirebase.fromJson(itemMap);
-            items.add(itemFirebase);
+            if(itemFirebase.isAprovado != null){
+              if(!widget.isUser && !widget.isUserInteressado && !itemFirebase.isAprovado!){
+                items.add(itemFirebase);
+              }
+            }
+            if(user != null){
+              if(widget.isUser && itemFirebase.user == user!.uid){
+                items.add(itemFirebase);
+              }
+              if(widget.isUserInteressado && itemFirebase.userInteressado == user!.uid){
+                items.add(itemFirebase);
+              }
+            }
           }
           return ListView.builder(
             padding: const EdgeInsets.only(top: 16, left: 2, right: 2, bottom: 120),

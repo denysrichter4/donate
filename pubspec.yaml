@@ -20,8 +20,9 @@ dependencies:
   another_dashed_container: ^1.0.0
   image_picker: ^0.8.6
   flutter_native_splash: ^2.2.13
-  cryptography: ^2.0.5
+  crypto: ^3.0.2
   google_sign_in: ^5.4.2
+  get: ^4.6.5
 
 dev_dependencies:
   flutter_test:
@@ -35,6 +36,7 @@ flutter:
   assets:
     - assets/logo/donate_logo.jpg
     - assets/logo/donate_splash_screen.jpg
+    - assets/logo/google_icon.png
 
   # fonts:
   #   - family: Schyler

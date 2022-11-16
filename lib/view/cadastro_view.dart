@@ -4,12 +4,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:donate/controller/crypto.dart';
+import 'package:get/get.dart';
 
 import '../controller/routes.dart';
 
 class CadastroView extends StatefulWidget {
-  const CadastroView({Key? key, required this.isLoginGoogle}) : super(key: key);
-  final bool isLoginGoogle;
+  const CadastroView({Key? key,}) : super(key: key);
   @override
   State<CadastroView> createState() => _CadastroViewState();
 }
@@ -29,44 +29,47 @@ class _CadastroViewState extends State<CadastroView> {
   void initState() {
     auth = FirebaseAuth.instance;
     itemsRef = FirebaseDatabase.instance.ref("users");
-    googleLogin();
     super.initState();
-  }
-
-  void googleLogin(){
-    String name = user()!.displayName!;
-    String email = user()!.email!;
-    nomeCtrl.text = name;
-    emailCtrl.text = email;
   }
 
   User? user() => auth.currentUser;
 
   Future<void> runSnapshot() async {
-    if(user() != null){
-      String id = user()!.uid;
-      String senha = await Crypto.encrypt(senhaCtrl.text);
-      map = {
-        id : Usuario(
-            uuid: id,
-            admin: false,
-            nome: nomeCtrl.text,
-            email: emailCtrl.text,
-            senha: senha
-        ).toJson()
-      };
-      itemsRef.update(map);
+    try {
+      auth.createUserWithEmailAndPassword(email: emailCtrl.text, password: Crypto.encrypt(senhaCtrl.text)).whenComplete(() {
+        if(user() != null){
+          String id = user()!.uid;
+          String senha = Crypto.encrypt(senhaCtrl.text);
+          map = {
+            id : Usuario(
+                uuid: id,
+                admin: false,
+                nome: nomeCtrl.text,
+                email: emailCtrl.text,
+                senha: senha
+            ).toJson()
+          };
+          itemsRef.update(map);
+        }
+      });
+    } on FirebaseAuthException catch (e) {
+      print(e.message);
+    } catch (e) {
+      print(e);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    signInWithGoogle();
+    final _formKey = GlobalKey<FormState>();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 207, 0),
       body: Container(
         padding: const EdgeInsets.only(top: 50),
-        child: ListView(
+        child: Form(
+          key: _formKey,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          child: ListView(
           children: [
             Image.asset(
               "assets/logo/donate_splash_screen.jpg",
@@ -95,7 +98,19 @@ class _CadastroViewState extends State<CadastroView> {
                   ),
                   child:  Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: TextField(
+                    child: TextFormField(
+                      keyboardType: TextInputType.name,
+                      validator: (value) {
+                        if (value != null) {
+                          if(value.isEmpty){
+                            return 'Informe o email';
+                          }
+                          if(value.length < 5){
+                            return 'O Nome deve ter 5 ou mais caracteres';
+                          }
+
+                        }
+                      },
                       controller: nomeCtrl,
                       minLines: 1,
                       maxLines: 2,
@@ -133,7 +148,19 @@ class _CadastroViewState extends State<CadastroView> {
                   ),
                   child:  Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: TextField(
+                    child: TextFormField(
+                      keyboardType: TextInputType.emailAddress,
+                      validator: (value) {
+                        if (value != null) {
+                          if(value.isEmpty){
+                            return 'Informe o email';
+                          }
+                          if(!value.isEmail){
+                            return 'Informe um email valido';
+                          }
+
+                        }
+                      },
                       controller: emailCtrl,
                       minLines: 1,
                       maxLines: 2,
@@ -171,7 +198,17 @@ class _CadastroViewState extends State<CadastroView> {
                   ),
                   child:  Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: TextField(
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value != null) {
+                          if(value.isEmpty){
+                            return 'Informe a senha';
+                          }
+                          if(value.length < 6){
+                            return 'A senha deve ter 6 ou mais caracteres';
+                          }
+                        }
+                      },
                       controller: senhaCtrl,
                       obscureText: true,
                       style: const TextStyle(
@@ -208,7 +245,20 @@ class _CadastroViewState extends State<CadastroView> {
                   ),
                   child:  Padding(
                     padding: const EdgeInsets.only(left: 16, right: 16),
-                    child: TextField(
+                    child: TextFormField(
+                      validator: (value) {
+                        if (value != null) {
+                          if(value.isEmpty){
+                            return 'Confirme a senha';
+                          }
+                          if(value.length < 6){
+                            return 'A senha deve ter 6 ou mais caracteres';
+                          }
+                          if(value != senhaCtrl.text){
+                            return 'As senhas estão diferentes';
+                          }
+                        }
+                      },
                       controller: confirmaSenhaCtrl,
                       obscureText: true,
                       style: const TextStyle(
@@ -224,15 +274,15 @@ class _CadastroViewState extends State<CadastroView> {
             ),
             GestureDetector(
               onTap: () {
-                setState(() {
-                  runSnapshot();
-                });
-                Navigator.of(context).pushNamed(
-                    Routes.LOGIN
-                );
+                if(_formKey.currentState != null){
+                  if (_formKey.currentState!.validate()) {
+                    runSnapshot();
+                    Navigator.of(context).pushNamed(Routes.LOGIN);
+                  }
+                }
               },
               child: Container(
-                margin: EdgeInsets.only(top: 20),
+                margin: const EdgeInsets.only(top: 20, bottom: 20),
                 height: 50,
                 alignment: Alignment.bottomCenter,
                 child: Container(
@@ -255,6 +305,7 @@ class _CadastroViewState extends State<CadastroView> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

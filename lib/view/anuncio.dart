@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:donate/model/item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
@@ -430,7 +431,9 @@ class _AddAnuncioState extends State<AddAnuncio> {
                     localRetirada: localCrtl.text,
                     prazoRetirada: "$dropdownDias - $dropdownHorario",
                     data: day+t+month+t+year+e+hour+i+minute,
-                    keyName: keyName
+                    keyName: keyName,
+                    user: FirebaseAuth.instance.currentUser!.uid,
+                    isAprovado: false
                   ).toJson()
                 };
               });

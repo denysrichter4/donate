@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:donate/view/item_selecionado.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +24,9 @@ class ItemTile extends StatelessWidget{
       data: item.data,
       isPrincipal: isPrincipal,
       keyName: item.keyName,
+      isAprovado: item.isAprovado!,
+      user: item.user!,
+
     );
   }
 }
@@ -43,9 +44,14 @@ class TileItem extends StatelessWidget {
     required this.prazoRetirada,
     required this.data,
     required this.isPrincipal,
-    required this.keyName
+    required this.keyName,
+    required this.isAprovado,
+    required this.user,
+
   }) : super(key: key);
 
+  final bool isAprovado;
+  final String user;
   final String imagem;
   final String title;
   final String description;
@@ -91,16 +97,18 @@ class TileItem extends StatelessWidget {
               MaterialPageRoute<void>(
                 builder: (BuildContext context) => ItemSelecionado(
                   itemFirebase: ItemFirebase(
+                      isAprovado: isAprovado,
                       imagem: this.imagem,
-                      titulo: this.title,
-                      descricao: this.description,
-                      motivo: this.motivo,
-                      especificidades: this.especificidades,
-                      problemas: this.problemas,
-                      localRetirada: this.localRetirada,
-                      prazoRetirada: this.prazoRetirada,
-                      keyName: this.keyName,
-                      data: this.data
+                      titulo: title,
+                      descricao: description,
+                      motivo: motivo,
+                      especificidades: especificidades,
+                      problemas: problemas,
+                      localRetirada: localRetirada,
+                      prazoRetirada: prazoRetirada,
+                      keyName: keyName,
+                      data: data,
+                      user: user
                   ),
                 ),
               )
@@ -125,6 +133,7 @@ class TileItem extends StatelessWidget {
                   Map<String, dynamic> map = {};
                   map = {
                     keyName : ItemFirebase(
+                        isAprovado: isAprovado,
                         imagem: this.imagem,
                         titulo: title,
                         descricao: description,
@@ -134,7 +143,8 @@ class TileItem extends StatelessWidget {
                         localRetirada: localRetirada,
                         prazoRetirada: prazoRetirada,
                         keyName: keyName,
-                        data: data
+                        data: data,
+                        user: user,
                     ).toJson()
                   };
                   itemsRef.update(map);
