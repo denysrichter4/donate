@@ -1,24 +1,27 @@
 import 'dart:convert';
 import 'package:donate/model/item.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../controller/routes.dart';
 import 'item_tile.dart';
 
-class EmAnalise extends StatefulWidget {
-  const EmAnalise({Key? key}) : super(key: key);
+class EmAndamento extends StatefulWidget {
+  const EmAndamento({Key? key}) : super(key: key);
 
   @override
-  State<EmAnalise> createState() => _EmAnaliseState();
+  State<EmAndamento> createState() => _EmAndamentoState();
 }
 
-class _EmAnaliseState extends State<EmAnalise> {
+class _EmAndamentoState extends State<EmAndamento> {
 
   late DatabaseReference itemsRef;
+  User? user;
 
   @override
   void initState() {
-    itemsRef = FirebaseDatabase.instance.ref("em_analise");
+    itemsRef = FirebaseDatabase.instance.ref("em_andamento");
+    user = FirebaseAuth.instance.currentUser;
     super.initState();
   }
 
@@ -40,12 +43,16 @@ class _EmAnaliseState extends State<EmAnalise> {
           var items = <ItemFirebase>[];
           for (var itemMap in map.values) {
             ItemFirebase itemFirebase = ItemFirebase.fromJson(itemMap);
-            items.add(itemFirebase);
+            if(user != null){
+              if(itemFirebase.user == user!.uid || itemFirebase.userInteressado == user!.uid){
+                items.add(itemFirebase);
+              }
+            }
           }
           return ListView.builder(
             padding: const EdgeInsets.only(top: 16, left: 2, right: 2, bottom: 120),
             itemCount: items.length,
-            itemBuilder: (ctx, i) => ItemTile(items[i], "em_analise"),
+            itemBuilder: (ctx, i) => ItemTile(items[i], "em_andamento"),
           );
 
         }else{

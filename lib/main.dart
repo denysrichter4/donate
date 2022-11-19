@@ -20,6 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      restorationScopeId: 'app',
         title: 'Donate',
         theme: ThemeData(
           primarySwatch: Colors.amber,

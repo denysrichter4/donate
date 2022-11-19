@@ -19,13 +19,11 @@ class Principal extends StatefulWidget {
 class _PrincipalState extends State<Principal> {
 
   late DatabaseReference itemsRef;
-  late DatabaseReference itemsRefAnalise;
   User? user;
 
   @override
   void initState() {
     itemsRef = FirebaseDatabase.instance.ref("principal");
-    itemsRefAnalise = FirebaseDatabase.instance.ref("em_analise");
     user = FirebaseAuth.instance.currentUser;
     super.initState();
   }
@@ -65,7 +63,7 @@ class _PrincipalState extends State<Principal> {
           return ListView.builder(
             padding: const EdgeInsets.only(top: 16, left: 2, right: 2, bottom: 120),
             itemCount: items.length,
-            itemBuilder: (ctx, i) => ItemTile(items[i], true),
+            itemBuilder: (ctx, i) => ItemTile(items[i], "principal"),
           );
 
         }else{

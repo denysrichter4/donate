@@ -1,4 +1,5 @@
 import 'package:donate/view/item_selecionado.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../controller/routes.dart';
@@ -6,171 +7,125 @@ import '../model/item.dart';
 
 class ItemTile extends StatelessWidget{
   final ItemFirebase item;
-  final bool isPrincipal;
-  const ItemTile(this.item, this.isPrincipal, {super.key});
+  final String route;
+  const ItemTile(this.item, this.route, {super.key});
 
-
-  @override
-  Widget build(BuildContext context) {
-    return TileItem(
-      imagem: item.imagem!,
-      title: item.titulo,
-      description: item.descricao,
-      motivo: item.motivo!,
-      especificidades: item.especificidades!,
-      problemas: item.problemas!,
-      localRetirada: item.localRetirada,
-      prazoRetirada: item.prazoRetirada,
-      data: item.data,
-      isPrincipal: isPrincipal,
-      keyName: item.keyName,
-      isAprovado: item.isAprovado!,
-      user: item.user!,
-
-    );
-  }
-}
-
-class TileItem extends StatelessWidget {
-  const TileItem({
-    Key? key,
-    required this.imagem,
-    required this.title,
-    required this.description,
-    required this.motivo,
-    required this.especificidades,
-    required this.problemas,
-    required this.localRetirada,
-    required this.prazoRetirada,
-    required this.data,
-    required this.isPrincipal,
-    required this.keyName,
-    required this.isAprovado,
-    required this.user,
-
-  }) : super(key: key);
-
-  final bool isAprovado;
-  final String user;
-  final String imagem;
-  final String title;
-  final String description;
-  final String motivo;
-  final String especificidades;
-  final String problemas;
-  final String localRetirada;
-  final String prazoRetirada;
-  final String data;
-  final String keyName;
-  final bool isPrincipal;
 
   @override
   Widget build(BuildContext context) {
     DatabaseReference itemsRef = FirebaseDatabase.instance.ref("principal");
     DatabaseReference itemsRefExclude = FirebaseDatabase.instance.ref("em_analise");
-    final imagem = this.imagem.isEmpty || this.imagem == null || !this.imagem.contains("http") ? Container(
-       height: 120,
-      width: 120,
-      decoration: BoxDecoration(
-        border: Border.all(),
-        borderRadius: const BorderRadius.all(Radius.circular(8))
-      ),
-      child: const Center(
-        child: Text(
-            "Anúncio sem imagem",
-            style: TextStyle(
-                fontSize: 10
-            )
+    final _imagem = item.imagem == null ||item.imagem!.isEmpty || !item.imagem!.contains("http") ? Container(
+        height: 120,
+        width: 120,
+        decoration: BoxDecoration(
+            border: Border.all(),
+            borderRadius: const BorderRadius.all(Radius.circular(8))
         ),
-      )
+        child: const Center(
+          child: Text(
+              "Anúncio sem imagem",
+              style: TextStyle(
+                  fontSize: 10
+              )
+          ),
+        )
     ) : Image(
-      image:NetworkImage(this.imagem),
+      image:NetworkImage(item.imagem!),
       fit: BoxFit.cover,
       width: 120,
       height: 120,
     );
     return GestureDetector(
       onTap: (){
-        if(this.isPrincipal){
-          Navigator.push(
-              context,
-              MaterialPageRoute<void>(
-                builder: (BuildContext context) => ItemSelecionado(
-                  itemFirebase: ItemFirebase(
-                      isAprovado: isAprovado,
-                      imagem: this.imagem,
-                      titulo: title,
-                      descricao: description,
-                      motivo: motivo,
-                      especificidades: especificidades,
-                      problemas: problemas,
-                      localRetirada: localRetirada,
-                      prazoRetirada: prazoRetirada,
-                      keyName: keyName,
-                      data: data,
-                      user: user
-                  ),
-                ),
-              )
-          );
-        } else{
-          showDialog<String>(
-              context: context,
-              builder: (BuildContext context) =>AlertDialog(
-            title: const Text('Validar item'),
-            content: const Text('Deseja EXCLUIR ou APROVAR item?'),
-            actions: <Widget>[
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, 'Cancel');
-                  itemsRefExclude.child(keyName).remove();
-                },
-                child: const Text('Excluir'),
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context, 'Cancel');
-                  Map<String, dynamic> map = {};
-                  map = {
-                    keyName : ItemFirebase(
-                        isAprovado: isAprovado,
-                        imagem: this.imagem,
-                        titulo: title,
-                        descricao: description,
-                        motivo: motivo,
-                        especificidades: especificidades,
-                        problemas: problemas,
-                        localRetirada: localRetirada,
-                        prazoRetirada: prazoRetirada,
-                        keyName: keyName,
-                        data: data,
-                        user: user,
-                    ).toJson()
-                  };
-                  itemsRef.update(map);
-                  itemsRefExclude.child(keyName).remove();
-                } ,
-                child: const Text('Aprovar'),
-              ),
-            ],
-          )
-          );
+        switch(route){
+          case "principal":{
+            Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) =>
+                      ItemSelecionado(
+                        itemFirebase: item,
+                        isPrincipal: true,
+                      ),
+                )
+            );
+            break;
+          }
+
+          case"em_analise":{
+            showDialog<String>(
+                context: context,
+                builder: (BuildContext context) =>AlertDialog(
+                  title: const Text('Validar item'),
+                  content: const Text('Deseja EXCLUIR ou APROVAR item?'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, 'Cancel');
+                        itemsRefExclude.child(item.keyName).remove();
+                      },
+                      child: const Text('Excluir'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, 'Cancel');
+                        Map<String, dynamic> map = {};
+                        map = {
+                          item.keyName : item.toJson()
+                        };
+                        itemsRef.update(map);
+                        itemsRefExclude.child(item.keyName).remove();
+                      } ,
+                      child: const Text('Aprovar'),
+                    ),
+                  ],
+                )
+            );
+            break;
+          }
+          case"em_andamento":{
+            Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) =>
+                      ItemSelecionado(
+                        itemFirebase: item,
+                        isPrincipal: false,
+                      ),
+                )
+            );
+            break;
+          }
+          default:{
+            Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (BuildContext context) =>
+                      ItemSelecionado(
+                        itemFirebase: item,
+                        isPrincipal: true,
+                      ),
+                )
+            );
+            break;
+          }
         }
       },
       child: Card(
           child: Row(
             children: [
-              imagem,
+              _imagem,
               Container(
                 height: 120,
                 width: 260,
                 padding: const EdgeInsets.all(12),
                 child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      title,
+                      item.titulo,
                       style: const TextStyle(
                         overflow: TextOverflow.ellipsis,
                         color: Colors.green,
@@ -179,7 +134,7 @@ class TileItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      description,
+                      item.descricao,
                       style: const TextStyle(
                         overflow: TextOverflow.ellipsis,
                         color: Colors.black45,
@@ -188,20 +143,27 @@ class TileItem extends StatelessWidget {
                       ),
                     ),
                     Text(
-                      data,
+                      item.data,
                       style: const TextStyle(
                         color: Colors.black45,
                         overflow: TextOverflow.ellipsis,
                         fontSize: 12,
                       ),
                     ),
+                    item.isAprovado! && item.user == FirebaseAuth.instance.currentUser!.uid ? const Text(
+                      "Pronto para aprovação!",
+                      style: TextStyle(
+                        color: Colors.red,
+                        overflow: TextOverflow.ellipsis,
+                        fontSize: 12,
+                      ),
+                    ):  const Padding(padding: EdgeInsets.zero)
                   ],
                 ),
-              )
+              ),
             ],
           )
       ),
     );
   }
 }
-

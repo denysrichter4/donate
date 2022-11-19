@@ -66,8 +66,9 @@ class _LoginViewState extends State<LoginView> {
                   Container(
                     margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                     decoration: BoxDecoration(
+                      color: Colors.white,
                         border: Border.all(
-                            color: Colors.black12
+                            color: Colors.black
                         ),
                         borderRadius: const BorderRadius.all(Radius.circular(8))
                     ),
@@ -116,8 +117,9 @@ class _LoginViewState extends State<LoginView> {
                   Container(
                     margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                     decoration: BoxDecoration(
+                        color: Colors.white,
                         border: Border.all(
-                            color: Colors.black12
+                            color: Colors.black
                         ),
                         borderRadius: const BorderRadius.all(Radius.circular(8))
                     ),
@@ -200,6 +202,7 @@ class _LoginViewState extends State<LoginView> {
                       height: 50,
                       width: 170,
                       decoration: BoxDecoration(
+                        color: Colors.lightGreen,
                         borderRadius: BorderRadius.circular(20),
                         border: Border.all(),
                       ),
@@ -207,7 +210,7 @@ class _LoginViewState extends State<LoginView> {
                       child: const Text(
                         "Login",
                         style: TextStyle(
-                          color: Colors.green,
+                          color: Colors.black,
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),

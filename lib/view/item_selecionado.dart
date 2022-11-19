@@ -5,33 +5,98 @@ import 'package:flutter/material.dart';
 
 class ItemSelecionado extends StatefulWidget {
   final ItemFirebase itemFirebase;
-  const ItemSelecionado({Key? key, required this.itemFirebase}) : super(key: key);
+  final bool isPrincipal;
+  const ItemSelecionado({Key? key, required this.itemFirebase, required this.isPrincipal}) : super(key: key);
 
   @override
   State<ItemSelecionado> createState() => _ItemSelecionadoState();
 }
 
-class _ItemSelecionadoState extends State<ItemSelecionado> {
+class _ItemSelecionadoState extends State<ItemSelecionado> with RestorationMixin{
 
   bool isSelected = false;
 
-  String dropdownDias = "1 dia";
-  String dropdownHorario = "8h as 17h";
-  List<String> dropdownDiasList = <String>['1 dia', '2 dias', '3 dias', '4 dias'];
-  List<String> dropdownHorarioList = <String>['8h as 17h', '9h as 17h', '10h as 17h', '8h as 22h'];
-  DropdownMenuItem<String> itemDropdown(String value) => DropdownMenuItem<String>(
-    value: value,
-    child: Text(
-      value,
-      style: TextStyle(fontSize: 20),
-    ),
-  );
+  String dataSelecionada = "";
+  String horaInicial = "";
+  String horaFinal = "";
 
-  List<DropdownMenuItem<String>> itensDropdownDias(){
-    return dropdownDiasList.map<DropdownMenuItem<String>>(itemDropdown).toList();
+  final RestorableDateTime _selectedDate = RestorableDateTime(DateTime.now());
+  late final RestorableRouteFuture<DateTime?> _restorableDatePickerRouteFuture =
+  RestorableRouteFuture<DateTime?>(
+    onComplete: _selectDate,
+    onPresent: (NavigatorState navigator, Object? arguments) {
+      return navigator.restorablePush(
+        _datePickerRoute,
+        arguments: _selectedDate.value.millisecondsSinceEpoch,
+      );
+    },
+  );
+  @override
+  String? get restorationId => "restorationId";
+
+  @override
+  void restoreState(RestorationBucket? oldBucket, bool initialRestore) {
+    registerForRestoration(_selectedDate, 'selected_date');
+    registerForRestoration(
+        _restorableDatePickerRouteFuture, 'date_picker_route_future');
   }
-  List<DropdownMenuItem<String>> itensDropdownHorario(){
-    return dropdownHorarioList.map<DropdownMenuItem<String>>(itemDropdown).toList();
+
+  static Route<DateTime> _datePickerRoute(
+      BuildContext context,
+      Object? arguments,
+      ) {
+    return DialogRoute<DateTime>(
+      context: context,
+      builder: (BuildContext context) {
+        return DatePickerDialog(
+          restorationId: 'date_picker_dialog',
+          initialEntryMode: DatePickerEntryMode.calendarOnly,
+          initialDate: DateTime.now(),
+          firstDate: DateTime.now(),
+          lastDate: DateTime(2100),
+        );
+      },
+    );
+  }
+
+  void _selectDate(DateTime? newSelectedDate) {
+    if (newSelectedDate != null) {
+      setState(() {
+        _selectedDate.value = newSelectedDate;
+        dataSelecionada = '${_selectedDate.value.day}/${_selectedDate.value.month}/${_selectedDate.value.year}';
+      });
+    }
+  }
+
+  Future selectedTime(BuildContext context, bool isInicial) async{
+    var time = await showTimePicker(
+      context: context,
+      initialTime: const TimeOfDay(hour: 08, minute: 00),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+    if(isInicial){
+      if(time != null){
+        setState((){
+          horaInicial =  "Das ${time.hour}:${time.minute}";
+        });
+      }else{
+        horaInicial =  "";
+      }
+    }else{
+      if(time != null){
+        setState((){
+          horaFinal =  "ás ${time.hour}:${time.minute}";
+        });
+      }else{
+        horaFinal =  "";
+      }
+    }
+
   }
 
   @override
@@ -246,7 +311,31 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                   ),
                 ),
                 const Divider(),
-                Container(
+                widget.itemFirebase.isAprovado! ? Container(
+                  margin: const EdgeInsets.fromLTRB(0, 8, 0, 100),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.only(bottom: 8),
+                        child: Text(
+                          "Prazo de retirada Donatário :",
+                          style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold
+                          ),
+                        ),
+                      ),
+                      Text(
+                        "${widget.itemFirebase.dataSolicitada!} - ${widget.itemFirebase.horarioSolicitado!}",
+                        style: const TextStyle(
+                            fontSize: 12,
+                            color: Colors.black45
+                        ),
+                      ),
+                    ],
+                  ),
+                ) :Container(
                   margin: const EdgeInsets.only(bottom: 100),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -264,30 +353,88 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
                       Row(
                         children: [
                           Container(
-                            margin: const EdgeInsets.only(left: 0, right: 16, bottom: 8),
-                            width: 150,
-                            child: DropdownButtonFormField(
-                              items: itensDropdownDias(),
-                              value: itensDropdownDias().first.value,
-                              onChanged: (String? value){
-                                setState(() {
-                                  dropdownDias = value!;
-                                });
-                              },
-                            ),
+                              margin: const EdgeInsets.only(left: 32, right: 16, bottom: 8, top: 8),
+                              width: 100,
+                              child: GestureDetector(
+                                onTap: (){
+                                  _restorableDatePickerRouteFuture.present();
+                                },
+                                child: dataSelecionada.isEmpty ? Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: Colors.amber.shade300,
+                                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                      border: Border.all()
+                                  ),
+                                  child: const Text(
+                                    "No Dia:",
+                                    style: TextStyle(
+                                        fontSize: 18
+                                    ),
+                                  ),
+                                ) : Text(
+                                  dataSelecionada,
+                                  style: const TextStyle(
+                                      fontSize: 18
+                                  ),
+                                ),
+                              )
                           ),
                           Container(
-                            margin: const EdgeInsets.only(left: 16, bottom: 8),
-                            width: 150,
-                            child: DropdownButtonFormField(
-                              items: itensDropdownHorario(),
-                              value: itensDropdownHorario().first.value,
-                              onChanged: (String? value){
-                                setState(() {
-                                  dropdownHorario = value!;
-                                });
-                              },
-                            ),
+                              margin: const EdgeInsets.only(left: 8, bottom: 8, top: 8),
+                              width: 90,
+                              child: GestureDetector(
+                                onTap: (){
+                                  selectedTime(context, true);
+                                },
+                                child: horaInicial.isEmpty ? Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: Colors.amber.shade300,
+                                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                      border: Border.all()
+                                  ),
+                                  child: const Text(
+                                    "Das:",
+                                    style: TextStyle(
+                                        fontSize: 18
+                                    ),
+                                  ),
+                                ) : Text(
+                                  horaInicial,
+                                  style: const TextStyle(
+                                      fontSize: 18
+                                  ),
+                                ),
+                              )
+                          ),
+                          Container(
+                              margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8, top: 8),
+                              width: 75,
+                              child: GestureDetector(
+                                onTap: (){
+                                  selectedTime(context, false);
+                                },
+                                child: horaFinal.isEmpty ? Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                      color: Colors.amber.shade300,
+                                      borderRadius: const BorderRadius.all(Radius.circular(20)),
+                                      border: Border.all()
+                                  ),
+                                  child: const Text(
+                                    "Ás:",
+                                    style: TextStyle(
+                                        fontSize: 18
+                                    ),
+                                  ),
+                                ) : Text(
+                                  horaFinal,
+                                  style: const TextStyle(
+                                      fontSize: 18
+                                  ),
+                                ),
+                              )
                           ),
                         ],
                       )
@@ -299,18 +446,83 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
           ),
         ],
       ),
-      floatingActionButton: GestureDetector(
+      floatingActionButton: widget.isPrincipal ? (widget.itemFirebase.isAprovado! ? GestureDetector(
+        onTap: (){
+          FirebaseDatabase.instance.ref("em_andamento").update({widget.itemFirebase.keyName : widget.itemFirebase.toJson()});
+          FirebaseDatabase.instance.ref("principal/${widget.itemFirebase.keyName}").remove();
+          Navigator.pop(context);
+        },
+        child: Container(
+          margin: const EdgeInsets.fromLTRB(80, 16, 60, 16),
+          height: 50,
+          alignment: Alignment.bottomCenter,
+          child: Container(
+              height: 50,
+              width: 180,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Colors.amber.shade400
+              ),
+              alignment: Alignment.center,
+              child: const Text(
+                "Aprovar Retirada!",
+                style: TextStyle(
+                  color: Colors.green,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 18,
+                ),
+              )
+          ),
+        ),
+      ) : GestureDetector(
         onTap: (){
           Map<String, dynamic> map = {};
-          setState(() {
-            widget.itemFirebase.userInteressado = FirebaseAuth.instance.currentUser!.uid;
-            widget.itemFirebase.isAprovado = true;
-            widget.itemFirebase.dataSolicitada = dropdownDias;
-            widget.itemFirebase.horarioSolicitado = dropdownHorario;
-            map = {widget.itemFirebase.keyName : widget.itemFirebase.toJson()};
-          });
-          FirebaseDatabase.instance.ref("principal").update(map);
-          Navigator.pop(context);
+          if(widget.itemFirebase.user != FirebaseAuth.instance.currentUser!.uid){
+            if(dataSelecionada.isNotEmpty && horaInicial.isNotEmpty && horaFinal.isNotEmpty){
+              setState(() {
+                widget.itemFirebase.userInteressado = FirebaseAuth.instance.currentUser!.uid;
+                widget.itemFirebase.isAprovado = true;
+                widget.itemFirebase.dataSolicitada = dataSelecionada;
+                widget.itemFirebase.horarioSolicitado = "$horaInicial $horaFinal";
+                map = {widget.itemFirebase.keyName : widget.itemFirebase.toJson()};
+              });
+              FirebaseDatabase.instance.ref("principal").update(map);
+              Navigator.pop(context);
+            }else{
+              showDialog<String>(
+                  context: context,
+                  builder: (BuildContext context) =>AlertDialog(
+                    title: const Text('Atenção!'),
+                    content: const Text('Informe um prazo válido!'),
+                    actions: <Widget>[
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context, 'Cancel');
+                        } ,
+                        child: const Text('Ok'),
+                      ),
+                    ],
+                  )
+              );
+            }
+          }else{
+            showDialog<String>(
+                context: context,
+                builder: (BuildContext context) =>AlertDialog(
+                  title: const Text('Atenção!'),
+                  content: const Text('Você não pode aceitar o item que está doando!'),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, 'Cancel');
+                      } ,
+                      child: const Text('Ok'),
+                    ),
+                  ],
+                )
+            );
+          }
+
         },
         child: Container(
           margin: const EdgeInsets.fromLTRB(80, 16, 60, 16),
@@ -334,7 +546,7 @@ class _ItemSelecionadoState extends State<ItemSelecionado> {
               )
           ),
         ),
-      ),
+      )) : const Padding(padding: EdgeInsets.zero),
     );
   }
 }

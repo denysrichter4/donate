@@ -91,8 +91,9 @@ class _CadastroViewState extends State<CadastroView> {
                 Container(
                   margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                   decoration: BoxDecoration(
+                      color: Colors.white,
                       border: Border.all(
-                          color: Colors.black12
+                          color: Colors.black
                       ),
                       borderRadius: const BorderRadius.all(Radius.circular(8))
                   ),
@@ -103,7 +104,7 @@ class _CadastroViewState extends State<CadastroView> {
                       validator: (value) {
                         if (value != null) {
                           if(value.isEmpty){
-                            return 'Informe o email';
+                            return 'Informe o nome';
                           }
                           if(value.length < 5){
                             return 'O Nome deve ter 5 ou mais caracteres';
@@ -141,8 +142,9 @@ class _CadastroViewState extends State<CadastroView> {
                 Container(
                   margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                   decoration: BoxDecoration(
+                      color: Colors.white,
                       border: Border.all(
-                          color: Colors.black12
+                          color: Colors.black
                       ),
                       borderRadius: const BorderRadius.all(Radius.circular(8))
                   ),
@@ -191,8 +193,9 @@ class _CadastroViewState extends State<CadastroView> {
                 Container(
                   margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                   decoration: BoxDecoration(
+                      color: Colors.white,
                       border: Border.all(
-                          color: Colors.black12
+                          color: Colors.black
                       ),
                       borderRadius: const BorderRadius.all(Radius.circular(8))
                   ),
@@ -238,8 +241,9 @@ class _CadastroViewState extends State<CadastroView> {
                 Container(
                   margin: const EdgeInsets.only(left: 16, right: 16, bottom: 8),
                   decoration: BoxDecoration(
+                      color: Colors.white,
                       border: Border.all(
-                          color: Colors.black12
+                          color: Colors.black
                       ),
                       borderRadius: const BorderRadius.all(Radius.circular(8))
                   ),
@@ -289,6 +293,7 @@ class _CadastroViewState extends State<CadastroView> {
                     height: 50,
                     width: 170,
                     decoration: BoxDecoration(
+                      color: Colors.lightGreen,
                       borderRadius: BorderRadius.circular(20),
                       border: Border.all(),
                     ),
@@ -296,7 +301,7 @@ class _CadastroViewState extends State<CadastroView> {
                     child: const Text(
                       "Cadastrar",
                       style: TextStyle(
-                        color: Colors.green,
+                        color: Colors.black,
                         fontWeight: FontWeight.bold,
                         fontSize: 18,
                       ),

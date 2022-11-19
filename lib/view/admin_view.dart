@@ -3,6 +3,7 @@ import 'package:donate/view/principal.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import '../controller/routes.dart';
+import 'em_andamento.dart';
 
 class AdminView extends StatefulWidget {
   const AdminView({Key? key}) : super(key: key);
@@ -14,9 +15,14 @@ class AdminView extends StatefulWidget {
 class _AdminViewState extends State<AdminView> {
   bool isUser = false;
   bool isUserInteressado = false;
+  bool isEmAndamento = false;
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
+    return WillPopScope(
+        onWillPop: () async{
+      return false;
+    },
+    child:DefaultTabController(
         length: 2,
         child: Scaffold(
             drawer: Drawer(
@@ -42,6 +48,7 @@ class _AdminViewState extends State<AdminView> {
                       setState(() {
                         isUser = false;
                         isUserInteressado = false;
+                        isEmAndamento = false;
                       });
                       Navigator.pop(context);
                     },
@@ -60,6 +67,7 @@ class _AdminViewState extends State<AdminView> {
                       setState(() {
                         isUser = true;
                         isUserInteressado = false;
+                        isEmAndamento = false;
                       });
                       Navigator.pop(context);
                     },
@@ -68,7 +76,7 @@ class _AdminViewState extends State<AdminView> {
                   ListTile(
                     leading: const Icon(Icons.access_time_rounded),
                     title: const Text(
-                      'Itens Selecionados',
+                      'Itens selecionados',
                       style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold
@@ -78,6 +86,24 @@ class _AdminViewState extends State<AdminView> {
                       setState(() {
                         isUser = false;
                         isUserInteressado = true;
+                        isEmAndamento = false;
+                      });
+                      Navigator.pop(context);
+                    },
+                  ),
+                  const Divider(),
+                  ListTile(
+                    leading: const Icon(Icons.cached),
+                    title: const Text(
+                      'Em andamento',
+                      style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    onTap: () {
+                      setState(() {
+                        isEmAndamento = true;
                       });
                       Navigator.pop(context);
                     },
@@ -117,7 +143,6 @@ class _AdminViewState extends State<AdminView> {
               ),
               bottom: TabBar(
                 enableFeedback: true,
-
                 tabs: [
                   Container(
                     height: 35,
@@ -128,7 +153,7 @@ class _AdminViewState extends State<AdminView> {
                           color: Colors.black12
                       ),
                     ),
-                    child: Text("Principal"),
+                    child: const Text("Principal"),
                   ),
                   Container(
                     height: 35,
@@ -139,14 +164,14 @@ class _AdminViewState extends State<AdminView> {
                           color: Colors.black12
                       ),
                     ),
-                    child: Text("Em análise"),
+                    child: const Text("Em análise"),
                   ),
                 ],
               ),
             ),
             body: TabBarView(
               children: [
-                Principal(isUser: isUser, isUserInteressado: isUserInteressado,),
+                isEmAndamento? const EmAndamento() : Principal(isUser: isUser, isUserInteressado: isUserInteressado,),
                 const EmAnalise(),
               ],
             ),
@@ -180,6 +205,7 @@ class _AdminViewState extends State<AdminView> {
               ),
             )
         )
+      )
     );
   }
 }

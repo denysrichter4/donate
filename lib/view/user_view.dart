@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import '../controller/routes.dart';
+import 'em_andamento.dart';
 import 'item_tile.dart';
 
 class UserView extends StatefulWidget {
@@ -16,17 +17,9 @@ class UserView extends StatefulWidget {
 
 class _UserViewState extends State<UserView> {
 
-  late DatabaseReference itemsRef;
   bool isUser = false;
   bool isUserInteressado = false;
-  User? user;
-
-  @override
-  void initState() {
-    itemsRef = FirebaseDatabase.instance.ref("principal");
-    user = FirebaseAuth.instance.currentUser;
-    super.initState();
-  }
+  bool isEmAndamento = false;
 
   @override
   Widget build(BuildContext context) {
@@ -59,6 +52,7 @@ class _UserViewState extends State<UserView> {
                     setState(() {
                       isUser = false;
                       isUserInteressado = false;
+                      isEmAndamento = false;
                     });
                     Navigator.pop(context);
                   },
@@ -77,6 +71,7 @@ class _UserViewState extends State<UserView> {
                     setState(() {
                       isUser = true;
                       isUserInteressado = false;
+                      isEmAndamento = false;
                     });
                     Navigator.pop(context);
                   },
@@ -85,7 +80,7 @@ class _UserViewState extends State<UserView> {
                 ListTile(
                   leading: const Icon(Icons.access_time_rounded),
                   title: const Text(
-                      'Itens Selecionados',
+                      'Itens selecionados',
                     style: TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold
@@ -95,6 +90,24 @@ class _UserViewState extends State<UserView> {
                     setState(() {
                       isUser = false;
                       isUserInteressado = true;
+                      isEmAndamento = false;
+                    });
+                    Navigator.pop(context);
+                  },
+                ),
+                const Divider(),
+                ListTile(
+                  leading: const Icon(Icons.cached),
+                  title: const Text(
+                    'Em andamento',
+                    style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.bold
+                    ),
+                  ),
+                  onTap: () {
+                    setState(() {
+                      isEmAndamento = true;
                     });
                     Navigator.pop(context);
                   },
@@ -133,7 +146,7 @@ class _UserViewState extends State<UserView> {
               ),
             ),
           ),
-          body: Principal(isUser: isUser, isUserInteressado: isUserInteressado,),
+          body: isEmAndamento? const EmAndamento() : Principal(isUser: isUser, isUserInteressado: isUserInteressado,),
           floatingActionButton: GestureDetector(
             onTap: (){
               Navigator.of(context).pushNamed(
