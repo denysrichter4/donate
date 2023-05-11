@@ -100,21 +100,20 @@ class _AddAnuncioState extends State<AddAnuncio> with RestorationMixin{
     if(isInicial){
       if(time != null){
         setState((){
-          horaInicial =  "Das ${time.hour}:${time.minute}";
+          horaInicial =  "Das ${checkZero(time.hour)}:${checkZero(time.minute)}";
         });
-      }else{
-        horaInicial =  "";
       }
     }else{
       if(time != null){
         setState((){
-          horaFinal =  "ás ${time.hour}:${time.minute}";
+          horaFinal =  "ás ${checkZero(time.hour)}:${checkZero(time.minute)}";
         });
-      }else{
-        horaFinal =  "";
       }
     }
+  }
 
+  String checkZero(int time){
+    return time == 0 ? "00" : time.toString();
   }
 
   @override
@@ -215,10 +214,10 @@ class _AddAnuncioState extends State<AddAnuncio> with RestorationMixin{
                       validator: (value) {
                         if (value != null) {
                           if(value.isEmpty){
-                            return 'Informe o nome';
+                            return 'Preenchimento Obrigatório!';
                           }
                           if(value.length < 5){
-                            return 'O Nome deve ter 5 ou mais caracteres';
+                            return 'Deve ter 5 ou mais caracteres';
                           }
 
                         }
@@ -264,10 +263,10 @@ class _AddAnuncioState extends State<AddAnuncio> with RestorationMixin{
                       validator: (value) {
                         if (value != null) {
                           if(value.isEmpty){
-                            return 'Informe o nome';
+                            return 'Preenchimento Obrigatório!';
                           }
                           if(value.length < 5){
-                            return 'O Nome deve ter 5 ou mais caracteres';
+                            return 'Deve ter 5 ou mais caracteres';
                           }
 
                         }
@@ -313,10 +312,10 @@ class _AddAnuncioState extends State<AddAnuncio> with RestorationMixin{
                       validator: (value) {
                         if (value != null) {
                           if(value.isEmpty){
-                            return 'Informe o nome';
+                            return 'Preenchimento Obrigatório!';
                           }
                           if(value.length < 5){
-                            return 'O Nome deve ter 5 ou mais caracteres';
+                            return 'Deve ter 5 ou mais caracteres';
                           }
 
                         }
@@ -362,10 +361,10 @@ class _AddAnuncioState extends State<AddAnuncio> with RestorationMixin{
                       validator: (value) {
                         if (value != null) {
                           if(value.isEmpty){
-                            return 'Informe o nome';
+                            return 'Preenchimento Obrigatório!';
                           }
                           if(value.length < 5){
-                            return 'O Nome deve ter 5 ou mais caracteres';
+                            return 'Deve ter 5 ou mais caracteres';
                           }
 
                         }
@@ -411,10 +410,10 @@ class _AddAnuncioState extends State<AddAnuncio> with RestorationMixin{
                       validator: (value) {
                         if (value != null) {
                           if(value.isEmpty){
-                            return 'Informe o nome';
+                            return 'Preenchimento Obrigatório!';
                           }
                           if(value.length < 5){
-                            return 'O Nome deve ter 5 ou mais caracteres';
+                            return 'Deve ter 5 ou mais caracteres';
                           }
 
                         }
@@ -460,10 +459,10 @@ class _AddAnuncioState extends State<AddAnuncio> with RestorationMixin{
                       validator: (value) {
                         if (value != null) {
                           if(value.isEmpty){
-                            return 'Informe o nome';
+                            return 'Preenchimento Obrigatório!';
                           }
                           if(value.length < 5){
-                            return 'O Nome deve ter 5 ou mais caracteres';
+                            return 'Deve ter 5 ou mais caracteres';
                           }
 
                         }

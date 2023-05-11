@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:donate/controller/routes.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -15,62 +17,65 @@ class LoginController extends GetxController{
   bool isSigned = false;
   bool isNUll = false;
   late DatabaseReference itemsRef;
+  late DatabaseReference itemsRefUserCheck;
   late DatabaseReference itemsRefAdmin;
   final auth = FirebaseAuth.instanceFor(app: Firebase.app(), persistence: Persistence.NONE);
-
-  void initState() {
-    itemsRefAdmin = FirebaseDatabase.instance.ref("users/${auth.currentUser?.uid}/admin");
-    itemsRef = FirebaseDatabase.instance.ref("users");
-  }
-
   Map<String, dynamic> map = {};
   User? user() => auth.currentUser;
 
-  void runGoogleLogin(BuildContext context) {
-    initState();
+  void initState() {
+    itemsRefAdmin = FirebaseDatabase.instance.ref("users/${user()?.uid}/admin");
+    itemsRef = FirebaseDatabase.instance.ref("users");
+    itemsRefUserCheck = FirebaseDatabase.instance.ref("users/${user()?.uid}");
+  }
+
+  void runGoogleLogin() {
     signInWithGoogle().whenComplete(() async {
       if(await GoogleSignIn().isSignedIn()){
         if(user() != null){
-          map = {
-            user()!.uid : Usuario(
-                uuid: user()!.uid,
-                admin: false,
-                nome: user()!.displayName!,
-                email: user()!.email!,
-                senha: Crypto.encrypt(user()!.uid)
-            ).toJson()
-          };
-          itemsRef.update(map);
+          initState();
+          final snapshot = await itemsRefUserCheck.get();
+          if (!snapshot.exists) {
+            map = {
+              user()!.uid : Usuario(
+                  uuid: user()!.uid,
+                  admin: false,
+                  nome: user()!.displayName!,
+                  email: user()!.email!,
+                  senha: Crypto.encrypt(user()!.uid)
+              ).toJson()
+            };
+            itemsRef.update(map);
+          }
+          adminCheck();
         }
-        adminCheck(context);
       }
     });
   }
 
-  void runLogin(BuildContext context, String email, String password) async {
+  void runLogin(String email, String password) async {
     initState();
     if(email.isNotEmpty && password.isNotEmpty){
-      if(await initLogin(email, password) != null){
-        var user = auth.currentUser;
-        if(user != null){
-          adminCheck(context);
-        }
+      await initLogin(email, password);
+      var user = auth.currentUser;
+      if(user != null){
+        adminCheck();
       }
     }
   }
 
-  void adminCheck(BuildContext context) {
+  void adminCheck() async {
     initState();
-    itemsRefAdmin.onValue.listen((DatabaseEvent event) {
-      var admin = event.snapshot.value;
-      if(admin != null){
-        if(admin as bool){
-          Navigator.of(context).pushNamed(Routes.HOME_ADMIN);
-        }else{
-          Navigator.of(context).pushNamed(Routes.HOME_USER);
-        }
-      }
-    });
+    final snapshot = await itemsRefAdmin.get();
+    if(snapshot.value as bool){
+      goToRote(Routes.HOME_ADMIN);
+    }else{
+      goToRote(Routes.HOME_USER);
+    }
+  }
+
+  goToRote(String route){
+    Get.toNamed(route);
   }
 
   bool listenUser() {
@@ -82,19 +87,6 @@ class LoginController extends GetxController{
      isNUll = event != null;
      update();
    });
-    // FirebaseAuth.instance
-    //     .authStateChanges()
-    //     .listen((User? user){
-    //   if (user == null) {
-    //     print('User is signed out!');
-    //     isNUll = false;
-    //     update();
-    //   } else {
-    //     print('User is signed in!');
-    //     isNUll = true;
-    //     update();
-    //   }
-    // });
   }
 
   Future<UserCredential> initLogin(String email, String password) async {

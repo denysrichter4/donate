@@ -28,21 +28,15 @@ class _LoginViewState extends State<LoginView> {
     return emailCtrl.text.isNotEmpty ? checkEmail = emailCtrl.text : "";
   }
 
-
-  @override
-  void initState() {
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final _formKey = GlobalKey<FormState>();
+    final formKey = GlobalKey<FormState>();
     return Scaffold(
       backgroundColor: const Color.fromARGB(255, 255, 207, 0),
       body: Container(
         padding: const EdgeInsets.only(top: 50),
         child: Form(
-          key: _formKey,
+          key: formKey,
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: ListView(
             children: [
@@ -188,9 +182,9 @@ class _LoginViewState extends State<LoginView> {
               ),
               GestureDetector(
                 onTap: (){
-                  if(_formKey.currentState != null){
-                    if (_formKey.currentState!.validate()) {
-                      LoginController().runLogin(context, emailCheck(), passwordCheck());
+                  if(formKey.currentState != null){
+                    if (formKey.currentState!.validate()) {
+                      LoginController().runLogin(emailCheck(), passwordCheck());
                     }
                   }
                 },
@@ -220,7 +214,7 @@ class _LoginViewState extends State<LoginView> {
               ),
               GestureDetector(
                 onTap: (){
-                  LoginController().runGoogleLogin(context);
+                  LoginController().runGoogleLogin();
                 },
                 child: Container(
                   height: 50,

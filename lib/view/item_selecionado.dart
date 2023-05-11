@@ -82,21 +82,20 @@ class _ItemSelecionadoState extends State<ItemSelecionado> with RestorationMixin
     if(isInicial){
       if(time != null){
         setState((){
-          horaInicial =  "Das ${time.hour}:${time.minute}";
+          horaInicial =  "Das ${checkZero(time.hour)}:${checkZero(time.minute)}";
         });
-      }else{
-        horaInicial =  "";
       }
     }else{
       if(time != null){
         setState((){
-          horaFinal =  "ás ${time.hour}:${time.minute}";
+          horaFinal =  "ás ${checkZero(time.hour)}:${checkZero(time.minute)}";
         });
-      }else{
-        horaFinal =  "";
       }
     }
+  }
 
+  String checkZero(int time){
+    return time == 0 ? "00" : time.toString();
   }
 
   @override
@@ -446,7 +445,10 @@ class _ItemSelecionadoState extends State<ItemSelecionado> with RestorationMixin
           ),
         ],
       ),
-      floatingActionButton: widget.isPrincipal ? (widget.itemFirebase.isAprovado! ? GestureDetector(
+      floatingActionButton: widget.isPrincipal ?
+      (widget.itemFirebase.isAprovado! ?
+      (widget.itemFirebase.userInteressado != FirebaseAuth.instance.currentUser!.uid ?
+      GestureDetector(
         onTap: (){
           FirebaseDatabase.instance.ref("em_andamento").update({widget.itemFirebase.keyName : widget.itemFirebase.toJson()});
           FirebaseDatabase.instance.ref("principal/${widget.itemFirebase.keyName}").remove();
@@ -474,7 +476,9 @@ class _ItemSelecionadoState extends State<ItemSelecionado> with RestorationMixin
               )
           ),
         ),
-      ) : GestureDetector(
+      ) :
+      const Padding(padding: EdgeInsets.zero)) :
+      GestureDetector(
         onTap: (){
           Map<String, dynamic> map = {};
           if(widget.itemFirebase.user != FirebaseAuth.instance.currentUser!.uid){
@@ -546,7 +550,8 @@ class _ItemSelecionadoState extends State<ItemSelecionado> with RestorationMixin
               )
           ),
         ),
-      )) : const Padding(padding: EdgeInsets.zero),
+      )) :
+      const Padding(padding: EdgeInsets.zero),
     );
   }
 }

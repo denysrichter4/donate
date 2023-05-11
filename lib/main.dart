@@ -4,6 +4,7 @@ import 'package:donate/view/login_view.dart';
 import 'package:donate/view/user_view.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:get/get_navigation/src/root/get_material_app.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'controller/routes.dart';
 import 'package:donate/controller/login_controller.dart';
@@ -19,8 +20,8 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      restorationScopeId: 'app',
+    return GetMaterialApp(
+      //restorationScopeId: 'app',
         title: 'Donate',
         theme: ThemeData(
           primarySwatch: Colors.amber,
